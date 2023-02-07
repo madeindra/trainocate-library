@@ -1,4 +1,4 @@
-package main
+package math
 
 func Sum(numbers []int64) int64 {
 	var sum int64
