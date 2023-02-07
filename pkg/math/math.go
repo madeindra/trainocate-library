@@ -5,13 +5,13 @@ import (
 	"reflect"
 )
 
-func Sum(numbers []int64) int64 {
+func Sum(numbers []int64, ch chan<- int64) {
 	var sum int64
 	for _, n := range numbers {
 		sum += n
 	}
 
-	return sum
+	ch <- sum
 }
 
 func Average(numbers []float64) float64 {
