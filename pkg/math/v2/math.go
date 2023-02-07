@@ -1,28 +1,41 @@
-package math
+package v2
 
 import (
 	"errors"
 	"reflect"
+	"sync"
 )
 
-func Sum(numbers []int64) int64 {
+func Sum(numbers []int64, ch chan<- int64) {
 	var sum int64
 	for _, n := range numbers {
 		sum += n
 	}
 
-	return sum
+	ch <- sum
 }
 
-func Average(numbers []float64) float64 {
-	var sum int64
+func Average(numbers []float64, ch chan<- float64) {
+	var mtx sync.Mutex
+	var wg sync.WaitGroup
+
+	var sum int64 = 0
+
 	for _, n := range numbers {
-		sum += int64(n)
+		wg.Add(1)
+
+		go func(x float64) {
+			mtx.Lock()
+			sum += int64(x)
+			mtx.Unlock()
+			wg.Done()
+		}(n)
 	}
 
+	wg.Wait()
 	avg := float64(sum) / float64(len(numbers))
 
-	return avg
+	ch <- avg
 }
 
 func IsTooLong(list interface{}) (bool, error) {
